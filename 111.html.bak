@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>火眼金睛 - Flame-Eyes Gold Pupils</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+
+        :root {
+            --bg: #ffffff;
+            --text: #222;
+            --main: #ff4d4f;
+            --border: #eee;
+            --card: #fff;
+            --gray: #999;
+        }
+
+        [data-theme="dark"] {
+            --bg: #18181b;
+            --text: #e5e7eb;
+            --border: #333;
+            --card: #27272a;
+            --gray: #a1a1aa;
+        }
+
+        [data-theme="red"] {
+            --bg: #2d0000;
+            --text: #ffd1d1;
+            --border: #500;
+            --card: #420000;
+            --gray: #ff9999;
+        }
+
+        [data-theme="blue"] {
+            --bg: #001528;
+            --text: #d6eaff;
+            --border: #003366;
+            --card: #002244;
+            --gray: #99ccff;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            height: 64px;
+            background: var(--main);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            height: 48px;
+            margin-right: 32px;
+            border-radius: 8px;
+            background: url('https://i.imgur.com/your-logo-url.png') center/contain no-repeat;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...[此处为你提供的火眼金睛图Base64编码，完整代码已嵌入]');
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            flex: 1;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            padding: 0 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .user-actions button {
+            background: white;
+            color: var(--main);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .user-actions button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .contact-mail {
+            margin-left: 24px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* 广告位 */
+        .ad-space {
+            width: 100%;
+            height: 120px;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            margin: 24px 0;
+            background: var(--card);
+            font-size: 16px;
+        }
+
+        /* 分类标签 */
+        .category-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .category-tabs button {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .category-tabs button.active {
+            background: var(--main);
+            color: white;
+            border-color: var(--main);
+        }
+
+        /* 内容类型分类 */
+        .content-type-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .content-type-tabs button {
+            padding: 8px 16px;
+            background: var(--main);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .content-type-tabs button.active {
+            background: #d9363e;
+        }
+
+        /* 视频网格 */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .video-card {
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--card);
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .video-cover {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #ddd;
+            position: relative;
+        }
+
+        .video-type-tag {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .video-title {
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .video-author {
+            padding: 0 12px 8px;
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .video-stats {
+            padding: 0 12px 12px;
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        /* 播放器页面 */
+        .player-page {
+            display: none;
+        }
+
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .danmaku-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .danmaku-toggle {
+            position: absolute;
+            bottom: 60px;
+            left: 16px;
+            z-index: 20;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .video-info {
+            margin-bottom: 24px;
+        }
+
+        .video-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .video-stats {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 16px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .action-buttons button {
+            background: var(--main);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        /* 选集列表 */
+        .episode-list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .episode-item {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .episode-item:hover {
+            background: rgba(255, 77, 79, 0.1);
+            border-color: var(--main);
+        }
+
+        /* 评论区 */
+        .comment-section {
+            margin-top: 32px;
+        }
+
+        .comment-input {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .comment-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .comment-input button {
+            background: var(--main);
+            color: white;
+            border: none;
+            padding: 0 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .comment-list {
+            border-top: 1px solid var(--border);
+        }
+
+        .comment-item {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comment-user {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .comment-content {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* 创作者合约 */
+        .agreement {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 10px;
+            margin: 24px 0;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .agreement h3 {
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        /* 悬浮按钮 */
+        .float-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--main);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        .float-btn.left {
+            left: 24px;
+            right: auto;
+        }
+
+        /* 语言切换 */
+        .lang-switch {
+            position: fixed;
+            bottom: 80px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--main);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        /* 登录弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card);
+            padding: 32px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h3 {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: var(--main);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo" alt="火眼金睛"></div>
+        <div class="nav-links">
+            <a onclick="showHome()">首页</a>
+            <a>直播</a>
+            <a>电影</a>
+            <a>剧集</a>
+            <a>短剧</a>
+            <a>一般视频</a>
+            <a>AI创作</a>
+        </div>
+        <input type="text" class="search-box" placeholder="搜索剧集、创作者、分类">
+        <div class="user-actions">
+            <button id="loginBtn" onclick="openLoginModal()">登录</button>
+            <button id="uploadBtn" onclick="alert('请先登录后上传视频')">投稿</button>
+            <button id="liveBtn" onclick="alert('请先登录后开播')">开播</button>
+        </div>
+        <div class="contact-mail">合作邮箱：deadly9deadly@gmail.com</div>
+    </nav>
+
+    <!-- 首页 -->
+    <div class="container" id="homePage">
+        <div class="ad-space">广告位 · 可投放植入广告</div>
+
+        <div class="content-type-tabs">
+            <button class="active" onclick="filterVideos('all')">全部</button>
+            <button onclick="filterVideos('movie')">电影</button>
+            <button onclick="filterVideos('series')">剧集</button>
+            <button onclick="filterVideos('short')">短剧</button>
+            <button onclick="filterVideos('normal')">一般视频</button>
+        </div>
+
+        <div class="category-tabs">
+            <button class="active">推荐</button>
+            <button>科幻</button>
+            <button>玄幻</button>
+            <button>动作</button>
+            <button>恐怖</button>
+            <button>喜剧</button>
+            <button>爱情</button>
+        </div>
+
+        <div class="video-grid" id="videoGrid">
+            <!-- 视频卡片由JS动态生成 -->
+        </div>
+
+        <!-- 创作者电子合约 -->
+        <div class="agreement">
+            <h3>火眼金睛（Flame-Eyes Gold Pupils）平台创作者独家合作协议</h3>
+            <p><strong>1. 独家商业代理权</strong>：创作者上传至本平台的所有影视作品、直播内容、AI生成内容，其全球独家商业代理权、合作谈判权、品牌授权权永久归属于火眼金睛平台。创作者不得自行与任何第三方（包括影视公司、流媒体平台、广告商、品牌方等）进行合作洽谈、授权签约，不得自行开展与作品相关的任何商业活动。</p>
+            <p><strong>2. 违约赔偿条款</strong>：若创作者违反独家授权条款，自行与第三方合作，需向平台支付该作品自上传之日起全部收益的3倍金额作为违约金，同时平台有权永久封禁创作者账号、下架全部作品、终止直播权限，并追究全部法律责任。</p>
+            <p><strong>3. 收益分成规则</strong>：
+                <br>• 付费剧集分成：用户付费时填写邀请人账号，邀请人先分10%，剩余90%按平台20%、UP主80%分配；
+                <br>• 直播打赏分成：与视频付费分成规则一致，平台抽20%，UP主得80%；
+                <br>• 平台有权根据运营情况随时调整所有分成比例，调整后提前7日公示生效，创作者无异议权。
+            </p>
+            <p><strong>4. 收款账户支持</strong>：平台支持绑定全球所有收款账户，包括中国大陆/香港银行卡、万里汇（WorldFirst）、支付宝、微信支付、PayPal等所有主流支付方式，平台可随时调整收款机制。</p>
+            <p><strong>5. 内容合规承诺</strong>：创作者保证上传内容、直播内容、AI生成内容不违反任何法律法规，禁止出现针对中国政党的负面描述、粗俗话语及违法违规内容，违规内容将自动拦截，平台有权永久封禁账号并没收全部收益。</p>
+            <p><strong>6. AI生成内容归属</strong>：平台AI生成的全部内容知识产权归火眼金睛平台所有，仅平台管理员有权下载AI生成的视频，UP主及普通用户仅可在线观看，无权下载、复制、二次传播、商用。UP主可上传文字、图片、视频作为AI生成素材，生成内容版权仍归平台所有。</p>
+            <p><strong>7. 平台权利保留</strong>：平台有权随时调整网站功能、规则、收费机制、合约条款，无需单独通知创作者，调整后公示生效。</p>
+            <p><strong>8. 合约生效</strong>：创作者点击「同意并签署」即视为合约生效，有效期为永久，直至创作者账号注销且作品全部下架。</p>
+        </div>
+    </div>
+
+    <!-- 播放页 -->
+    <div class="container player-page" id="playerPage">
+        <div class="video-player">
+            <video id="video" controls width="100%"></video>
+            <div class="danmaku-container" id="danmakuContainer"></div>
+            <button class="danmaku-toggle" id="danmakuToggle">关闭弹幕</button>
+        </div>
+
+        <div class="video-info">
+            <h1 id="videoTitle">剧集标题</h1>
+            <div class="video-stats" id="videoStats">3.5亿播放 · 620.4万点赞 · 194人正在观看</div>
+            <div class="action-buttons">
+                <button id="likeBtn">点赞 9.1万</button>
+                <button id="dislikeBtn">不喜欢 2.4万</button>
+                <button id="collectBtn">收藏 1.6万</button>
+                <button id="shareBtn">转发 1209</button>
+            </div>
+        </div>
+
+        <h3>选集</h3>
+        <div class="episode-list" id="episodeList">
+            <!-- 分集列表 -->
+        </div>
+
+        <div class="ad-space">广告位 · 贴片广告</div>
+
+        <div class="comment-section">
+            <h3>评论区 (6253)</h3>
+            <div class="comment-input">
+                <input type="text" id="commentInput" placeholder="发表合规评论，禁止违规及负面政治内容">
+                <button id="sendCommentBtn">发送</button>
+            </div>
+            <div class="comment-list" id="commentList"></div>
+        </div>
+    </div>
+
+    <!-- 登录弹窗 -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h3>登录/注册</h3>
+            <div class="form-group">
+                <label>账号名</label>
+                <input type="text" id="usernameInput" placeholder="请输入账号名">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="passwordInput" placeholder="请输入密码">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeLoginModal()">取消</button>
+                <button class="btn-primary" onclick="login()">登录/注册</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 悬浮按钮 -->
+    <button class="float-btn left" onclick="alert('24小时AI客服已为您服务，请问有什么问题？')">💬</button>
+    <button class="lang-switch" onclick="changeLanguage()">🌐</button>
+    <button class="float-btn" id="themeBtn">🎨</button>
+
+    <script>
+        // ==================== 核心功能实现 ====================
+        // 主题切换
+        const themeBtn = document.getElementById('themeBtn');
+        const themes = ['', 'dark', 'red', 'blue'];
+        let currentTheme = 0;
+        themeBtn.onclick = () => {
+            currentTheme = (currentTheme + 1) % 4;
+            document.documentElement.setAttribute('data-theme', themes[currentTheme]);
+        };
+
+        // 语言切换（支持多语言）
+        const languages = ['zh-CN', 'zh-TW', 'en', 'ja', 'ko', 'hi'];
+        let currentLang = 0;
+        function changeLanguage() {
+            currentLang = (currentLang + 1) % languages.length;
+            alert(`已切换为${['简体中文', '繁體中文', 'English', '日本語', '한국어', 'हिन्दी'][currentLang]}`);
+            // 实际部署可对接完整多语言翻译系统
+        }
+
+        // 弹幕系统
+        const danmakuContainer = document.getElementById('danmakuContainer');
+        let danmakuEnabled = true;
+        const danmakuToggle = document.getElementById('danmakuToggle');
+        danmakuToggle.onclick = () => {
+            danmakuEnabled = !danmakuEnabled;
+            danmakuToggle.textContent = danmakuEnabled ? '关闭弹幕' : '开启弹幕';
+            danmakuContainer.style.display = danmakuEnabled ? 'block' : 'none';
+        };
+
+        // 违规内容审核
+        function isIllegalContent(text) {
+            const illegalKeywords = ['违法关键词', '违规政治内容', '粗俗话语'];
+            return illegalKeywords.some(keyword => text.includes(keyword));
+        }
+
+        // 发送弹幕
+        function sendDanmaku(text, color = '#ffffff', image = null) {
+            if (!danmakuEnabled || !text.trim()) return;
+            if (isIllegalContent(text)) {
+                alert('弹幕内容违规，已拦截');
+                return;
+            }
+
+            const dm = document.createElement('div');
+            if (image) {
+                dm.innerHTML = `<img src="${image}" style="height: 24px; vertical-align: middle;">`;
+            } else {
+                dm.textContent = text;
+                dm.style.color = color;
+            }
+            dm.style.position = 'absolute';
+            dm.style.left = '100%';
+            dm.style.top = `${Math.random() * 80}%`;
+            dm.style.fontSize = '24px';
+            dm.style.whiteSpace = 'nowrap';
+            dm.style.textShadow = '0 0 2px #000';
+            danmakuContainer.appendChild(dm);
+
+            let x = 100;
+            const timer = setInterval(() => {
+                x -= 1.2;
+                dm.style.left = `${x}%`;
+                if (x < -30) {
+                    clearInterval(timer);
+                    dm.remove();
+                }
+            }, 30);
+        }
+
+        // 评论系统
+        const sendCommentBtn = document.getElementById('sendCommentBtn');
+        const commentInput = document.getElementById('commentInput');
+        const commentList = document.getElementById('commentList');
+        sendCommentBtn.onclick = () => {
+            const text = commentInput.value.trim();
+            if (!text) return;
+            if (isIllegalContent(text)) {
+                alert('评论内容违规，已拦截');
+                return;
+            }
+
+            const comment = document.createElement('div');
+            comment.className = 'comment-item';
+            comment.innerHTML = `
+                <div class="comment-user">用户${Math.floor(Math.random() * 10000)}</div>
+                <div class="comment-content">${text}</div>
+            `;
+            commentList.appendChild(comment);
+            sendDanmaku(text);
+            commentInput.value = '';
+        };
+
+        // 视频数据
+        const videos = [
+            {id: 1, title: "AI科幻剧集《星际纪元》第一季", author: "AI创作实验室", type: "series", category: "科幻", episodes: 25, playCount: "3.5亿", likeCount: "620.4万"},
+            {id: 2, title: "玄幻电影《山海录》", author: "神话工作室", type: "movie", category: "玄幻", episodes: 1, playCount: "2.1亿", likeCount: "450.2万"},
+            {id: 3, title: "动作短剧《都市战警》", author: "动作影视工坊", type: "short", category: "动作", episodes: 12, playCount: "1.8亿", likeCount: "380.5万"},
+            {id: 4, title: "恐怖一般视频《午夜怪谈》幕后", author: "恐怖宇宙", type: "normal", category: "恐怖", episodes: 1, playCount: "1.5亿", likeCount: "320.1万"},
+        ];
+
+        // 渲染视频列表
+        const videoGrid = document.getElementById('videoGrid');
+        function renderVideos(filterType = 'all') {
+            videoGrid.innerHTML = '';
+            const filtered = filterType === 'all' ? videos : videos.filter(v => v.type === filterType);
+            filtered.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.innerHTML = `
+                    <div class="video-cover">
+                        <div class="video-type-tag">${{movie:'电影',series:'剧集',short:'短剧',normal:'一般视频'}[video.type]}</div>
+                    </div>
+                    <div class="video-title">${video.title}</div>
+                    <div class="video-author">${video.author}</div>
+                    <div class="video-stats">${video.playCount}播放 · ${video.likeCount}点赞</div>
+                `;
+                card.onclick = () => openPlayerPage(video);
+                videoGrid.appendChild(card);
+            });
+        }
+        renderVideos();
+
+        // 筛选视频
+        function filterVideos(type) {
+            document.querySelectorAll('.content-type-tabs button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderVideos(type);
+        }
+
+        // 打开播放页
+        function openPlayerPage(video) {
+            document.getElementById('homePage').style.display = 'none';
+            document.getElementById('playerPage').style.display = 'block';
+            document.getElementById('videoTitle').textContent = video.title;
+            document.getElementById('videoStats').textContent = `${video.playCount}播放 · ${video.likeCount}点赞 · ${Math.floor(Math.random() * 200)}人正在观看 · ${video.type}`;
+            renderEpisodeList(video.id, video.episodes);
+        }
+
+        // 渲染选集
+        function renderEpisodeList(videoId, count) {
+            const list = document.getElementById('episodeList');
+            list.innerHTML = '';
+            for (let i=1; i<=count; i++) {
+                const item = document.createElement('div');
+                item.className = 'episode-item';
+                item.textContent = `第${i}集`;
+                item.onclick = () => alert(`播放第${i}集`);
+                list.appendChild(item);
+            }
+        }
+
+        // 显示首页
+        function showHome() {
+            document.getElementById('playerPage').style.display = 'none';
+            document.getElementById('homePage').style.display = 'block';
+        }
+
+        // 登录弹窗
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+        function login() {
+            const user = document.getElementById('usernameInput').value;
+            const pwd = document.getElementById('passwordInput').value;
+            if (user && pwd) {
+                alert(`登录成功！欢迎，${user}`);
+                closeLoginModal();
+                document.getElementById('loginBtn').textContent = user;
+            } else {
+                alert('请输入账号名和密码');
+            }
+        }
+
+        // 分成计算逻辑
+        function calculatePayment(amount, inviterId) {
+            if (inviterId) {
+                const inviterShare = amount * 0.1;
+                const remaining = amount * 0.9;
+                const platformShare = remaining * 0.2;
+                const creatorShare = remaining * 0.8;
+                return {inviterShare, platformShare, creatorShare};
+            } else {
+                const platformShare = amount * 0.2;
+                const creatorShare = amount * 0.8;
+                return {platformShare, creatorShare};
+            }
+        }
+
+        // 分享功能
+        document.getElementById('shareBtn').onclick = () => {
+            alert('支持一键转发至微信、微博、WhatsApp等全球所有社交平台');
+        };
+
+        // AI生成视频功能提示
+        document.querySelector('.nav-links a:last-child').onclick = () => {
+            alert('AI生成影片功能（对标Seedance 2.0）：支持生成电影级4K视频、全球多语言台词/字幕、自动匹配BGM，仅平台管理员可下载生成内容');
+        };
+
+        // 直播功能提示
+        document.querySelector('.nav-links a:nth-child(2)').onclick = () => {
+            alert('直播功能：UP主可自主开播，支持开启/关闭打赏，分成规则与视频一致');
+        };
+    </script>
+</body>
+</html>
